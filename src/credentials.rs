@@ -33,7 +33,10 @@ impl CredentialsStorage for KeyringStorage {
         let api_token = self
             .keyring
             .get_password()
-            .expect("failed to read from keyring");
+            .map_err(|err| {
+                eprintln!("Error reading keyring: {}", err);
+                return Box::new(StorageError::Read);
+            }).unwrap();
         Ok(Credentials { api_token })
     }
 

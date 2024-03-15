@@ -29,14 +29,19 @@ impl Error for ApiError {}
 
 #[derive(Debug)]
 pub enum StorageError {
+    Read,
     Write,
 }
 
 impl Display for StorageError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let error_message = match self {
+            StorageError::Read => constants::CREDENTIALS_ACCESS_ERROR,
+            StorageError::Write => constants::CREDENTIALS_WRITE_ERROR,
+        };
         let summary = format!(
             "{}\n{} {}",
-            constants::CREDENTIALS_ACCESS_ERROR.red(),
+            error_message,
             constants::OUTDATED_APP_ERROR_MESSAGE.blue().bold(),
             constants::ISSUE_LINK.blue().bold().underline()
         );
