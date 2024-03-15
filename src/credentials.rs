@@ -36,13 +36,17 @@ impl CredentialsStorage for KeyringStorage {
             .map_err(|err| {
                 eprintln!("Error reading keyring: {}", err);
                 return Box::new(StorageError::Read);
-            }).unwrap();
+            })
+            .unwrap();
         Ok(Credentials { api_token })
     }
 
     fn persist(&self, api_token: String) -> ResultWithDefaultError<()> {
         match self.keyring.set_password(api_token.as_str()) {
-            Err(_) => Err(Box::new(StorageError::Write)),
+            Err(err) => {
+                eprintln!("Error writing to keyring: {}", err);
+                return Err(Box::new(StorageError::Write));
+            }
             Ok(_) => Ok(()),
         }
     }
